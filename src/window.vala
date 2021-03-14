@@ -22,7 +22,7 @@
  
 using Gtk;
 using Gdk;
- 
+
 namespace Easypass {
 	public class MainWindow : Gtk.ApplicationWindow {
 
@@ -40,35 +40,34 @@ namespace Easypass {
             var entryKey =      new PasswordEntry() { show_peek_icon = true};
             var generateBtn =   new Button.with_label("Generate");
             var generatedPass = new PasswordEntry() { show_peek_icon = true };
+        
+            generateBtn.clicked.connect(() => {
+                try {
+                    generatedPass.text = Crypto.derive_password(entryKey.text, entrySite.text.down());
+                } catch (CryptoError error) {
+                    prin("CRYPRO ERROR");
+                }
+            });
 
-        generateBtn.clicked.connect(() => {
-            try {
-                generatedPass.text = Crypto.derive_password(entryKey.text, entrySite.text.down());
-            } catch (CryptoError error) {
-                prin("CRYPRO ERROR");
-            }
-        });
+            var grid = new Grid() { 
+                halign = Gtk.Align.CENTER, 
+                margin_end = 30, 
+                margin_start = 30, 
+                margin_top = 30, 
+                row_spacing = 4, 
+                column_spacing = 4
+            };
 
+            grid.attach (lblSite, 0, 0);
+            grid.attach_next_to (entrySite, lblSite, RIGHT);
+            grid.attach_next_to (imgTip, entrySite, RIGHT);
 
-        var grid = new Grid() { 
-            halign = Gtk.Align.CENTER, 
-            margin_end = 30, 
-            margin_start = 30, 
-            margin_top = 30, 
-            row_spacing = 4, 
-            column_spacing = 4
-        };
+            grid.attach (lblKeyWord, 0, 1);
+            grid.attach_next_to (entryKey, lblKeyWord, RIGHT);
 
-        grid.attach (lblSite, 0, 0);
-        grid.attach_next_to (entrySite, lblSite, RIGHT);
-        grid.attach_next_to (imgTip, entrySite, RIGHT);
-
-        grid.attach (lblKeyWord, 0, 1);
-        grid.attach_next_to (entryKey, lblKeyWord, RIGHT);
-
-        grid.attach (generateBtn, 0, 2, 4, 1);
-        grid.attach (generatedPass, 0, 3, 4, 1);
-		set_child (grid);
+            grid.attach (generateBtn, 0, 2, 4, 1);
+            grid.attach (generatedPass, 0, 3, 4, 1);
+            set_child (grid);
 		}
 	}
 }
